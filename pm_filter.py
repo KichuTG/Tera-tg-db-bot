@@ -37,23 +37,7 @@ BUTTONS = {}
 SPELL_CHECK = {}
 
 
-@Client.on_message(filters.group & filters.text & filters.incoming)
-async def give_filter(client, message):
-    if message.chat.id != SUPPORT_CHAT_ID:
-        glob = await global_filters(client, message)
-        if glob == False:
-            manual = await manual_filters(client, message)
-            if manual == False:
-                settings = await get_settings(message.chat.id)
-                try:
-                    if settings['auto_ffilter']:
-                        await auto_filter(client, message)
-                except KeyError:
-                    grpid = await active_connection(str(message.from_user.id))
-                    await save_group_settings(grpid, 'auto_ffilter', True)
-                    settings = await get_settings(message.chat.id)
-                    if settings['auto_ffilter']:
-                        await auto_filter(client, message)
+@client, message)
     else: #a better logic to avoid repeated lines of code in auto_filter function
         search = message.text
         temp_files, temp_offset, total_results = await get_search_results(chat_id=message.chat.id, query=search.lower(), offset=0, filter=True)
@@ -270,26 +254,7 @@ async def advantage_spoll_choker(bot, query):
     gl = await global_filters(bot, query.message, text=movie)
     if gl == False:
         k = await manual_filters(bot, query.message, text=movie)
-        if k == False:
-            files, offset, total_results = await get_search_results(query.message.chat.id, movie, offset=0, filter=True)
-            if files:
-                k = (movie, files, offset, total_results)
-                await auto_filter(bot, query, k)
-            else:
-                reqstr1 = query.from_user.id if query.from_user else 0
-                reqstr = await bot.get_users(reqstr1)
-                if NO_RESULTS_MSG:
-                    await bot.send_message(chat_id=LOG_CHANNEL, text=(script.NORSLTS.format(reqstr.id, reqstr.mention, movie)))
-                k = await query.message.edit(script.MVE_NT_FND)
-                await asyncio.sleep(10)
-                await k.delete()
-
-
-@Client.on_callback_query()
-async def cb_handler(client: Client, query: CallbackQuery):
-    if query.data == "close_data":
-        await query.message.delete()
-    elif query.data == "gfiltersdeleteallconfirm":
+gfiltersdeleteallconfirm":
         await del_allg(query.message, 'gfilters')
         await query.answer("Done !")
         return
